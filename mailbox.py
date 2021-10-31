@@ -212,7 +212,7 @@ class TestClass(object):
         self.arg = arg
 
     def sendJson(self):
-        pass
+        print('ok')
 
     def getJson(self)
         print(self)
