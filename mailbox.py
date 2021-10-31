@@ -206,9 +206,14 @@ class getMailDetailView(MailBoxBase):
     def as_view(self):
         return self.getMail(self.ids, self.FOLDER) 
 
-'''p = MailSubjectListView().as_view()
-for i in p:
-    print(i)'''
+class TestClass(object):
+    """docstring for TestClass"""
+    def __init__(self, arg):
+        self.arg = arg
+
+    def sendJson(self):
+        pass
+        
 
 p = MailIdsListView().as_view()
 print("p", p)
