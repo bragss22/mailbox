@@ -83,7 +83,6 @@ class MailBox():
             # if it's a bytes, decode to str
             return string_bytes.decode(encoding)
     
-    @_decorator_connect_server
     def getMailList(self, folder: str = 'inbox') -> list:
         '''
         Selected folder to the IMAP server
@@ -175,13 +174,6 @@ class MailBoxBase(MailBox):
     COUNT_MAIL = 3
     FOLDER = 'Sent'
 
-class classproperty(object):
-    def __init__(self, f):
-        self.f = f
-
-    def __get__(self, obj, owner):
-        return self.f(owner)
-
 class MailIdsListView(MailBoxBase):
     
     def as_view(self):
@@ -195,7 +187,7 @@ class MailSubjectListView(MailBoxBase):
     def as_view(self):
         return self.getMailSubject(self.FOLDER)
 
-    def as_json(self):   
+    def as_json(self):
         return json.dumps([x for x in self.getMailSubject(self.FOLDER)])
 
 class getMailDetailView(MailBoxBase):
@@ -207,7 +199,12 @@ class getMailDetailView(MailBoxBase):
             ids = str(ids).encode()
         return self.getMail(ids, self.FOLDER)
 
-
+class NewClass(object):
+    """docstring for NewClass"""
+    def __init__(self, arg):
+        super(NewClass, self).__init__()
+        self.arg = arg
+        
 j = MailSubjectListView().as_json()
 print("j", j)
 
