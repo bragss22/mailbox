@@ -212,7 +212,7 @@ class TestClass(object):
         self.arg = arg
 
     def sendJson(self):
-        pass
+        print('ok')
 
 j = MailSubjectListView().as_json()
 print("j", j)
