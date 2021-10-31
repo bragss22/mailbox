@@ -214,6 +214,9 @@ class TestClass(object):
     def sendJson(self):
         pass
 
+    def getJson(self)
+        print(self)
+
 j = MailSubjectListView().as_json()
 print("j", j)
 
