@@ -199,16 +199,13 @@ class getMailDetailView(MailBoxBase):
             ids = str(ids).encode()
         return self.getMail(ids, self.FOLDER)
 
-<<<<<<< HEAD
+
 class NewClass(object):
     """docstring for NewClass"""
     def __init__(self, arg):
         super(NewClass, self).__init__()
         self.arg = arg
         
-=======
-
-<<<<<<< HEAD
 class TestClass(object):
     """docstring for TestClass"""
     def __init__(self, arg):
@@ -216,10 +213,7 @@ class TestClass(object):
 
     def sendJson(self):
         pass
-        
-=======
->>>>>>> 3d07116afa966016a4b36ea0dd9bfc333a84d558
+
 j = MailSubjectListView().as_json()
 print("j", j)
->>>>>>> c8d7fe51dfd471407eaa0ab3fbbb8a009ce9d63b
 
