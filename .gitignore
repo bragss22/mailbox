@@ -2,5 +2,6 @@ __pycache__
 *.pyc
 .DS_Store
 main.py
+main2.py
 Pipfile
 Pipfile.lock
