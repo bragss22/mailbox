@@ -6,7 +6,7 @@ from email.policy import default
 import asyncio
 import os
 from typing import Generator, BinaryIO
-
+import json
 
 class MailBox():
     """Connect mailbox, get mail and return mail list"""
@@ -40,7 +40,7 @@ class MailBox():
         self.mail.close()
         self.mail.logout()
 
-    def _connect_server(fn):
+    def _decorator_connect_server(fn):
         '''
         Decorator conect and desconect to the IMAP server
         '''
@@ -81,10 +81,9 @@ class MailBox():
         string_bytes, encoding = decode_header(string)[0]
         if isinstance(string_bytes, bytes):
             # if it's a bytes, decode to str
-            print('-----', string_bytes.decode(encoding))
             return string_bytes.decode(encoding)
     
-    @_connect_server
+    @_decorator_connect_server
     def getMailList(self, folder: str = 'inbox') -> list:
         '''
         Selected folder to the IMAP server
@@ -96,7 +95,7 @@ class MailBox():
             ids = data[0]
             return ids.split()
 
-    @_connect_server
+    @_decorator_connect_server
     def getMailSubject(self, folder: str = 'inbox', page: int = 0) -> Generator[int, str, str]:
         '''
         Get subject in mails to the IMAP server
@@ -119,10 +118,10 @@ class MailBox():
 
                 email_message = email.message_from_string(raw_email_string)
                 headers = Parser(policy=default).parsestr(raw_email_string)
-                yield {'uid': i, 'subject': headers['Subject'], 'from': headers['From']}
+                yield {'uid': int(i), 'subject': headers['Subject'], 'from': headers['From']}
         
         
-    @_connect_server
+    @_decorator_connect_server
     def getMail(self, ids, folder: str = 'inbox') -> dict:
         '''
         Get body in mail to the IMAP server
@@ -146,13 +145,12 @@ class MailBox():
                 if "attachment" in content_disposition:
                     mail_obj['file_name'].append(payload.get_filename())
                 if content_type == 'text/html':
-                    mail_obj['text_html'] = payload.get_payload(decode=True).decode()
+                    mail_obj['text_html'] = payload.get_payload()
                 if content_type == "text/plain" and "attachment" not in content_disposition:
-                    mail_obj['text_plane'] = payload.get_payload(decode=True).decode()
-            
+                    mail_obj['text_plane'] = payload.get_payload()
             return mail_obj
 
-    @_connect_server
+    @_decorator_connect_server
     def uploadFile(self, ids, file_name: str, folder: str = 'inbox') -> None: #BinaryIO
         '''
         Downloads file from the IMAP server.
@@ -187,25 +185,30 @@ class classproperty(object):
 class MailIdsListView(MailBoxBase):
     
     def as_view(self):
-        return self.getMailList(self.FOLDER)
-
-    def __call__(self, *args, **kwargs):
-        print('ok')
-        return self.getMailSubject(self.FOLDER)
+        return [int(x) for x in self.getMailList(self.FOLDER)]
+    
+    def as_json(self):
+        return json.dumps({'ids':[str(int(x)) for x in self.getMailList(self.FOLDER)]})
 
 class MailSubjectListView(MailBoxBase):
 
     def as_view(self):
         return self.getMailSubject(self.FOLDER)
 
+    def as_json(self):   
+        return json.dumps([x for x in self.getMailSubject(self.FOLDER)])
+
 class getMailDetailView(MailBoxBase):
 
-    def __init__(self, **kwargs):
-        self.ids = kwargs.get('ids')
+    def as_view(self, ids):
+        if ids == None:
+            return ValueError('No id')
+        if not isinstance(ids, bytes) and isinstance(ids, int):
+            ids = str(ids).encode()
+        return self.getMail(ids, self.FOLDER)
 
-    def as_view(self):
-        return self.getMail(self.ids, self.FOLDER) 
 
+<<<<<<< HEAD
 class TestClass(object):
     """docstring for TestClass"""
     def __init__(self, arg):
@@ -214,6 +217,8 @@ class TestClass(object):
     def sendJson(self):
         pass
         
+=======
+j = MailSubjectListView().as_json()
+print("j", j)
+>>>>>>> c8d7fe51dfd471407eaa0ab3fbbb8a009ce9d63b
 
-p = MailIdsListView().as_view()
-print("p", p)
